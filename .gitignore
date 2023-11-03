@@ -161,3 +161,7 @@ cython_debug/
 
 # Airflow
 logs/
+
+# dev
+dev-conda.yml
+dev-notebooks/
