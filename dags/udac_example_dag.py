@@ -12,10 +12,16 @@ from helpers import SqlQueries
 # AWS_KEY = os.environ.get('AWS_KEY')
 # AWS_SECRET = os.environ.get('AWS_SECRET')
 
-default_args = {
-    'owner': 'udacity',
-    'start_date': datetime(2019, 1, 12),
-}
+default_args = dict(
+    owner='Marcus Reaiche',
+    start_date=datetime(2019, 1, 12),
+    catchup=False,
+    depends_on_past=False,
+    retries=3,
+    retry_delay=timedelta(minutes=5),
+    email_on_failure=False,
+    email_on_retry=False,
+)
 
 
 @dag(
@@ -59,5 +65,19 @@ def udac_example_dag():
     )
 
     end_operator = EmptyOperator(task_id='Stop_execution')
+
+    # Task dependencies
+    stage_tasks = [stage_events_to_redshift, stage_songs_to_redshift]
+    load_dimension_tables = [
+        load_song_dimension_table,
+        load_artist_dimension_table,
+        load_time_dimension_table,
+        load_user_dimension_table]
+
+    start_operator >> stage_tasks
+    stage_tasks >> load_songplays_table
+    load_songplays_table >> load_dimension_tables
+    load_dimension_tables >> run_quality_checks
+    run_quality_checks >> end_operator
 
 udac_example = udac_example_dag()
