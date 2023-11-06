@@ -20,7 +20,7 @@ default_args = dict(
 @dag(default_args=default_args,
      schedule_interval=None,
      description='Create tables in Redshift with Airflow')
-def drop_table_dag():
+def drop_tables_dag():
     tasks = []
     for table in sql_create_tables_dict:
         task = DropTableOperator(
@@ -35,4 +35,4 @@ def drop_table_dag():
     tasks >> end_task
 
 
-drop_table = drop_table_dag()
+drop_table = drop_tables_dag()

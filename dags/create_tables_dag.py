@@ -20,7 +20,7 @@ default_args = dict(
 @dag(default_args=default_args,
      schedule_interval=None,
      description='Create tables in Redshift with Airflow')
-def create_table_dag():
+def create_tables_dag():
     start_task = EmptyOperator(task_id='start')
     tasks = []
     for table, sql in sql_create_tables_dict.items():
@@ -35,4 +35,4 @@ def create_table_dag():
     tasks >> end_task
 
 
-create_table = create_table_dag()
+create_table = create_tables_dag()
