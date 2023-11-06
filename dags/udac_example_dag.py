@@ -93,6 +93,23 @@ def udac_example_dag():
 
     run_quality_checks = DataQualityOperator(
         task_id='Run_data_quality_checks',
+        conn_id='redshift',
+        test_cases=[
+            # check that all tables have data
+            ('select case when count(1) > 0 then 1 else 0 end from staging_events;', 1),
+            ('select case when count(1) > 0 then 1 else 0 end from staging_songs;', 1),
+            ('select case when count(1) > 0 then 1 else 0 end from songplays;', 1),
+            ('select case when count(1) > 0 then 1 else 0 end from users;', 1),
+            ('select case when count(1) > 0 then 1 else 0 end from artists;', 1),
+            ('select case when count(1) > 0 then 1 else 0 end from time;', 1),
+            ('select case when count(1) > 0 then 1 else 0 end from songs;', 1),
+            # check for nulls in key columns
+            ('select sum(case when userid is null then 1 else 0 end) from users;', 0),
+            ('select sum(case when artistid is null then 1 else 0 end) from artists;', 0),
+            ('select sum(case when songid is null then 1 else 0 end) from songs;', 0),
+            ('select sum(case when start_time is null then 1 else 0 end) from time;', 0),
+            ('select sum(case when playid is null or start_time is null then 1 else 0 end) from songplays;', 0),
+        ]
     )
 
     end_operator = EmptyOperator(task_id='Stop_execution')
@@ -111,4 +128,5 @@ def udac_example_dag():
     load_dimension_tables >> run_quality_checks
     run_quality_checks >> end_operator
 
-udac_example = udac_example_dag()
+
+_ = udac_example_dag()
