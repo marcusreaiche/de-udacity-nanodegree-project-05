@@ -19,14 +19,14 @@ default_args = dict(
     retry_delay=timedelta(minutes=5),
     email_on_failure=False,
     email_on_retry=False,
+    catchup=False,
 )
 
 
 @dag(
     default_args=default_args,
     description='Load and transform data in Redshift with Airflow',
-    schedule_interval='@hourly',
-    catchup=False)
+    schedule_interval='@hourly')
 def udac_example_dag():
 
     start_operator = EmptyOperator(task_id='Begin_execution')
@@ -62,18 +62,33 @@ def udac_example_dag():
 
     load_user_dimension_table = LoadDimensionOperator(
         task_id='Load_user_dim_table',
-    )
+        conn_id='redshift',
+        table='users',
+        sql=SqlQueries.user_table_insert,
+        insert_mode='delete-load')
 
     load_song_dimension_table = LoadDimensionOperator(
         task_id='Load_song_dim_table',
+        conn_id='redshift',
+        table='songs',
+        sql=SqlQueries.song_table_insert,
+        insert_mode='delete-load'
     )
 
     load_artist_dimension_table = LoadDimensionOperator(
         task_id='Load_artist_dim_table',
+        conn_id='redshift',
+        table='artists',
+        sql=SqlQueries.artist_table_insert,
+        insert_mode='delete-load'
     )
 
     load_time_dimension_table = LoadDimensionOperator(
         task_id='Load_time_dim_table',
+        conn_id='redshift',
+        table='time',
+        sql=SqlQueries.time_table_insert,
+        insert_mode='delete-load'
     )
 
     run_quality_checks = DataQualityOperator(
