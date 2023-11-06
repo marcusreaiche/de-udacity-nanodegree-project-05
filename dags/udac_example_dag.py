@@ -7,15 +7,13 @@ from operators import (
     LoadFactOperator,
     LoadDimensionOperator,
     DataQualityOperator)
+from airflow.models import Variable
 from helpers import SqlQueries
 
-# AWS_KEY = os.environ.get('AWS_KEY')
-# AWS_SECRET = os.environ.get('AWS_SECRET')
 
 default_args = dict(
     owner='Marcus Reaiche',
     start_date=datetime(2019, 1, 12),
-    catchup=False,
     depends_on_past=False,
     retries=3,
     retry_delay=timedelta(minutes=5),
@@ -27,17 +25,32 @@ default_args = dict(
 @dag(
     default_args=default_args,
     description='Load and transform data in Redshift with Airflow',
-    schedule_interval='@hourly')
+    schedule_interval='@hourly',
+    catchup=False)
 def udac_example_dag():
 
     start_operator = EmptyOperator(task_id='Begin_execution')
 
     stage_events_to_redshift = StageToRedshiftOperator(
         task_id='Stage_events',
+        conn_id='aws_credentials',
+        redshift_conn_id='redshift',
+        table='staging_events',
+        s3_bucket=Variable.get('s3_bucket'),
+        s3_key=Variable.get('log_data'),
+        option=Variable.get('log_jsonpath'),
+        region='us-west-2',
     )
 
     stage_songs_to_redshift = StageToRedshiftOperator(
         task_id='Stage_songs',
+        conn_id='aws_credentials',
+        redshift_conn_id='redshift',
+        table='staging_songs',
+        s3_bucket=Variable.get('s3_bucket'),
+        s3_key=Variable.get('song_data'),
+        option='auto',
+        region='us-west-2',
     )
 
     load_songplays_table = LoadFactOperator(

@@ -43,7 +43,7 @@ class SqlQueries:
 
 
 sql_create_tables_dict = dict(
-    artist = """
+    artists = """
         CREATE TABLE IF NOT EXISTS public.artists (
             artistid varchar(256) NOT NULL,
             name varchar(256),
