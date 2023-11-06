@@ -39,8 +39,8 @@ class StageToRedshiftOperator(BaseOperator):
     def execute(self, context):
         self.log.info('Running StageToRedshiftOperator')
         metastore = MetastoreBackend()
-        aws_credentials = metastore.get_connection(conn_id='aws_credentials')
-        redshift = PostgresHook(postgres_conn_id='redshift')
+        aws_credentials = metastore.get_connection(conn_id=self.conn_id)
+        redshift = PostgresHook(postgres_conn_id=self.redshift_conn_id)
         s3_path = f's3://{self.s3_bucket}/{self.s3_key}'
         sql = StageToRedshiftOperator.sql.format(
             table=self.table,
