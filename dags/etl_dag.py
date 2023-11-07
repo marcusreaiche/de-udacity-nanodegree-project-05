@@ -26,7 +26,7 @@ default_args = dict(
     default_args=default_args,
     description='Load and transform data in Redshift with Airflow',
     schedule_interval='@hourly')
-def udac_example_dag():
+def etl_dag():
 
     start_operator = EmptyOperator(task_id='Begin_execution')
 
@@ -128,4 +128,4 @@ def udac_example_dag():
     run_quality_checks >> end_operator
 
 
-_ = udac_example_dag()
+_ = etl_dag()
