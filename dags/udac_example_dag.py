@@ -93,7 +93,7 @@ def udac_example_dag():
 
     run_quality_checks = DataQualityOperator(
         task_id='Run_data_quality_checks',
-        conn_id='redshift',
+        redshift_conn_id='redshift',
         test_cases=[
             # check that all tables have data
             ('select case when count(1) > 0 then 1 else 0 end from staging_events;', 1),
