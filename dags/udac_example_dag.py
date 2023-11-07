@@ -55,21 +55,21 @@ def udac_example_dag():
 
     load_songplays_table = LoadFactOperator(
         task_id='Load_songplays_fact_table',
-        conn_id='redshift',
+        redshift_conn_id='redshift',
         sql=SqlQueries.songplay_table_insert,
         table='songplays'
     )
 
     load_user_dimension_table = LoadDimensionOperator(
         task_id='Load_user_dim_table',
-        conn_id='redshift',
+        redshift_conn_id='redshift',
         table='users',
         sql=SqlQueries.user_table_insert,
         insert_mode='delete-load')
 
     load_song_dimension_table = LoadDimensionOperator(
         task_id='Load_song_dim_table',
-        conn_id='redshift',
+        redshift_conn_id='redshift',
         table='songs',
         sql=SqlQueries.song_table_insert,
         insert_mode='delete-load'
@@ -77,7 +77,7 @@ def udac_example_dag():
 
     load_artist_dimension_table = LoadDimensionOperator(
         task_id='Load_artist_dim_table',
-        conn_id='redshift',
+        redshift_conn_id='redshift',
         table='artists',
         sql=SqlQueries.artist_table_insert,
         insert_mode='delete-load'
@@ -85,7 +85,7 @@ def udac_example_dag():
 
     load_time_dimension_table = LoadDimensionOperator(
         task_id='Load_time_dim_table',
-        conn_id='redshift',
+        redshift_conn_id='redshift',
         table='time',
         sql=SqlQueries.time_table_insert,
         insert_mode='delete-load'
@@ -93,7 +93,7 @@ def udac_example_dag():
 
     run_quality_checks = DataQualityOperator(
         task_id='Run_data_quality_checks',
-        conn_id='redshift',
+        redshift_conn_id='redshift',
         test_cases=[
             # check that all tables have data
             ('select case when count(1) > 0 then 1 else 0 end from staging_events;', 1),

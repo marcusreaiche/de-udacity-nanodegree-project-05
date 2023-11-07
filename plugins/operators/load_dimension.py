@@ -4,22 +4,25 @@ from airflow.utils.decorators import apply_defaults
 
 
 class LoadDimensionOperator(BaseOperator):
+    """
+    Load data to dimension table
+    """
     INSERT_MODE_OPTS = ['append-load', 'delete-load']
     ui_color = '#80BD9E'
 
     @apply_defaults
     def __init__(self,
-                 conn_id='redshift',
+                 redshift_conn_id='redshift',
                  table='',
                  sql='',
                  insert_mode='append-load',
                  *args, **kwargs):
         """
-        Instantiates a LoadDimensionOperator
+        LoadDimensionOperator constructor
 
         Arguments
         ---------
-        conn_id: str (default: 'redshift')
+        redshift_conn_id: str (default: 'redshift')
         Connection id to database cluster
 
         table: str (default: '')
@@ -33,7 +36,7 @@ class LoadDimensionOperator(BaseOperator):
         """
         super(LoadDimensionOperator, self).__init__(*args, **kwargs)
         self._check_params(insert_mode)
-        self.conn_id = conn_id
+        self.redshift_conn_id = redshift_conn_id
         self.table = table
         self.sql = sql.strip()
         self.insert_mode = insert_mode
@@ -48,7 +51,7 @@ class LoadDimensionOperator(BaseOperator):
     def execute(self, context):
         self.log.info(
             f'Running LoadDimensionOperator for dimension table {self.table}')
-        redshift = PostgresHook(postgres_conn_id=self.conn_id)
+        redshift = PostgresHook(postgres_conn_id=self.redshift_conn_id)
         query = self._build_transformation()
         redshift.run(query)
 

@@ -8,6 +8,22 @@ class CreateTableOperator(BaseOperator):
     Operator that creates a table in a specified database
     """
     def __init__(self, redshift_conn_id, table, sql=None, *args, **kwargs):
+        """
+
+        Arguments
+        ---------
+        redshift_conn_id: str (default: 'redshift')
+        Connection id to database
+
+        table: str (default: '')
+        Table to be created. Must be a key of helpers.sql_queries.sql_create_tables_dict
+        if sql argument is not provided
+
+        sql: str (default: None)
+        SQL command to create table. If None (or falsifiable), then table is used
+        to get SQL from helpers.sql_queries.sql_create_tables_dict
+        """
+
         self._check_init_args(table, sql)
         super(CreateTableOperator, self).__init__(*args, **kwargs)
         self.redshift_conn_id = redshift_conn_id

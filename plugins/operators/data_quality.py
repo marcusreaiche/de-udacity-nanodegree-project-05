@@ -4,26 +4,38 @@ from airflow.utils.decorators import apply_defaults
 
 
 class DataQualityOperator(BaseOperator):
-
+    """
+    Perform data quality checks
+    """
     ui_color = '#89DA59'
 
     @apply_defaults
     def __init__(self,
                  # Define your operators params (with defaults) here
                  # Example:
-                 conn_id='redshift',
+                 redshift_conn_id='redshift',
                  test_cases=None,
                  *args, **kwargs):
+        """
+        Arguments
+        ---------
+        redshift_conn_id: str (default: 'redshift')
+        Connection id to database
 
+        test_cases: iterable (default: None)
+        test_cases should be an iterable of pairs such as [(sql1, res1), ...]
+        The first element of the pair is an SQL query and the second element is the
+        query expected result.
+        """
         super(DataQualityOperator, self).__init__(*args, **kwargs)
-        self.conn_id = conn_id
+        self.redshift_conn_id = redshift_conn_id
         if test_cases is None:
             test_cases = []
         self.test_cases = test_cases
 
     def execute(self, context):
         self.log.info('Running DataQualityOperator')
-        redshift = PostgresHook(postgres_conn_id=self.conn_id)
+        redshift = PostgresHook(postgres_conn_id=self.redshift_conn_id)
         raise_error = False
         for sql, expected_result in self.test_cases:
             records = redshift.get_records(sql)
