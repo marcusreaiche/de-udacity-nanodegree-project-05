@@ -1,13 +1,12 @@
 from datetime import datetime, timedelta
 import os
-from airflow.decorators import dag, task
+from airflow.decorators import dag
 from airflow.operators.empty import EmptyOperator
 from operators import (
     StageToRedshiftOperator,
     LoadFactOperator,
     LoadDimensionOperator,
     DataQualityOperator)
-from airflow.models import Variable
 from helpers import SqlQueries
 
 
@@ -36,9 +35,9 @@ def udac_example_dag():
         conn_id='aws_credentials',
         redshift_conn_id='redshift',
         table='staging_events',
-        s3_bucket=Variable.get('s3_bucket'),
-        s3_key=Variable.get('log_data'),
-        option=Variable.get('log_jsonpath'),
+        s3_bucket='udacity-dend',
+        s3_key='log_data',
+        option='s3://udacity-dend/log_json_path.json',
         region='us-west-2',
     )
 
@@ -47,8 +46,8 @@ def udac_example_dag():
         conn_id='aws_credentials',
         redshift_conn_id='redshift',
         table='staging_songs',
-        s3_bucket=Variable.get('s3_bucket'),
-        s3_key=Variable.get('song_data'),
+        s3_bucket='udacity-dend',
+        s3_key='song_data',
         option='auto',
         region='us-west-2',
     )
