@@ -55,7 +55,7 @@ def udac_example_dag():
 
     load_songplays_table = LoadFactOperator(
         task_id='Load_songplays_fact_table',
-        conn_id='redshift',
+        redshift_conn_id='redshift',
         sql=SqlQueries.songplay_table_insert,
         table='songplays'
     )
